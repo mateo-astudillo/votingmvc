@@ -17,7 +17,10 @@ public class Login {
         loginButton.addActionListener(actionEvent -> {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
-            controller.login(username, password);
+            if (!controller.login(username, password)) {
+                usernameField.setText("");
+                passwordField.setText("");
+            }
         });
     }
 

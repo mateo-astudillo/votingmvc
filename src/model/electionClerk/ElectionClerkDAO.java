@@ -9,8 +9,7 @@ import java.sql.SQLException;
 public class ElectionClerkDAO {
 
     public static int validate(String username, String password) {
-        DBConnection dbConnection = new DBConnection();
-        Connection connection = dbConnection.getConnection();
+        Connection connection = DBConnection.getConnection();
         try {
             CallableStatement callableStatement = connection.prepareCall("CALL validateElectionClerk(?, ?, ?);");
             callableStatement.setString("username", username);

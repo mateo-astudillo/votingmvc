@@ -6,8 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainWindow extends JFrame {
-    private JPanel panel;
-    private CardLayout cardLayout;
+    private final JPanel panel;
+    private final CardLayout cardLayout;
     public MainWindow(Controller controller) {
         setTitle("Voting System");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -19,7 +19,7 @@ public class MainWindow extends JFrame {
         ValidateGUI validateGUI = new ValidateGUI(controller);
 
         panel.add(login.getLoginPanel(), "login");
-        panel.add(validateGUI.getValidateGUIPanel(), "validatePerson");
+        panel.add(validateGUI.getValidateGUIPanel(), "main");
 
         add(panel);
         pack();

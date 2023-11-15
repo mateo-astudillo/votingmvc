@@ -18,16 +18,18 @@ public class Controller {
         window.setVisible(true);
     }
 
-    public void login(String username, String password) {
+    public boolean login(String username, String password) {
         int id = ElectionClerkDAO.validate(username, password);
         if (id == 0) {
             Incidence incidence = new Incidence();
             incidence.setType(IncidenceType.FAILED_LOGIN);
             incidence.setDescription("Usuario: " + username + " contraseña: " + password);
             IncidenceDAO.save(incidence);
+            return false;
         }
         electionClerk.setId(id);
-        window.go("validatePerson");
+        window.go("main");
+        return true;
     }
 
     public boolean isValid(int document) {
@@ -36,5 +38,9 @@ public class Controller {
 
     public Person getPerson(int document) {
         return PersonDAO.getPerson(document);
+    }
+
+    public void vote() {
+        window.go("voting");
     }
 }
