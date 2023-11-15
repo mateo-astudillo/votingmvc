@@ -4,8 +4,6 @@ import controller.Controller;
 import model.person.Person;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class ValidateGUI {
     private JPanel validateGUIPanel;
@@ -26,6 +24,7 @@ public class ValidateGUI {
     private JLabel genderLabel;
     private JLabel addressLabel;
     private JLabel addressValueLabel;
+    private Person person;
 
     public ValidateGUI(Controller controller) {
 
@@ -34,7 +33,7 @@ public class ValidateGUI {
             if (!controller.isValid(document)) {
                 return;
             }
-            Person person = controller.getPerson(document);
+            person = controller.getPerson(document);
             this.firstNameValueLabel.setText(person.getFirstName());
             this.lastNameValueLabel.setText(person.getLastName());
             this.birthdateValueLabel.setText(person.getBirthdate().toString());
@@ -44,8 +43,7 @@ public class ValidateGUI {
 
         confirmButton.addActionListener(actionEvent -> {
             this.clearFields();
-            controller.vote();
-
+            controller.vote(this.person);
         });
     }
 
@@ -54,6 +52,7 @@ public class ValidateGUI {
     }
 
     private void clearFields() {
+        this.documentTextField.setText("");
         this.firstNameValueLabel.setText("");
         this.lastNameValueLabel.setText("");
         this.birthdateValueLabel.setText("");

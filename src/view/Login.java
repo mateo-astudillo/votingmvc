@@ -17,14 +17,18 @@ public class Login {
         loginButton.addActionListener(actionEvent -> {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
-            if (!controller.login(username, password)) {
-                usernameField.setText("");
-                passwordField.setText("");
-            }
+            this.clearFields();
+            if ( username.length() != 6 || password.length() != 6 ) return;
+            controller.login(username, password);
         });
     }
 
     public JPanel getLoginPanel() {
         return this.loginPanel;
+    }
+
+    private void clearFields() {
+        usernameField.setText("");
+        passwordField.setText("");
     }
 }
