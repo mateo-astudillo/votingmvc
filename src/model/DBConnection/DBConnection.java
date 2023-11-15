@@ -11,8 +11,13 @@ import java.util.Properties;
 public class DBConnection {
     public static Connection getConnection() {
         Properties properties = new Properties();
-        String database, username, password, host, url, driver, path;
-        path = "src/model/DBConnection/connection.properties";
+        String database, username, password, host, url, driver, path, pathFromEnv;
+        pathFromEnv = System.getenv("CONFIG_FILE_VOTING");
+        if (! (pathFromEnv == null) ) {
+            path = pathFromEnv;
+        } else {
+            path = "./src/model/DBConnection/connection.properties";
+        }
         int port;
         try {
             File file = new File(path);
