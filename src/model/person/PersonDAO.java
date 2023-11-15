@@ -14,7 +14,6 @@ public class PersonDAO {
             preparedStatement.execute();
             ResultSet resultSet = preparedStatement.getResultSet();
             resultSet.next();
-            preparedStatement.close();
             return resultSet.getInt(1) == 1;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -26,15 +25,15 @@ public class PersonDAO {
         Person person = new Person();
         person.setDocument(document);
         try {
-            CallableStatement callableStatement = connection.prepareCall("CALL getPerson(?, ?, ?, ?, ?, ?);");
+            CallableStatement callableStatement = connection.prepareCall("CALL getPerson(?, ?, ?, ?, ?, ?, ?);");
             callableStatement.setInt("document", document);
             callableStatement.execute();
             person.setId(callableStatement.getInt("id"));
             person.setFirstName(callableStatement.getString("firstName"));
             person.setLastName(callableStatement.getString("lastName"));
-            person.setGender(callableStatement.getString("gender"));
             person.setBirthdate(callableStatement.getDate("birthdate"));
             person.setAddress(callableStatement.getString("address"));
+            person.setGender(callableStatement.getString("gender"));
             callableStatement.close();
             return person;
         } catch (SQLException e) {

@@ -1,5 +1,7 @@
 package view;
 
+import controller.Controller;
+
 import javax.swing.*;
 
 public class Login {
@@ -11,10 +13,11 @@ public class Login {
     private JLabel usernameLabel;
     private JLabel passwordLabel;
 
-    public Login() {
+    public Login(Controller controller) {
         loginButton.addActionListener(actionEvent -> {
             String username = usernameField.getText().trim();
             String password = new String(passwordField.getPassword());
+            controller.login(username, password);
         });
     }
 
