@@ -129,4 +129,8 @@ public class Controller {
         incidence.setDescription("documento: " + person.getFirstName());
         IncidenceDAO.save(incidence);
     }
+
+    public void dialog(String message) {
+        window.dialog(message);
+    }
 }
