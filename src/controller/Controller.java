@@ -1,5 +1,9 @@
 package controller;
 
+import model.candidate.Candidate;
+import model.candidate.CandidateDAO;
+import model.contest.Contest;
+import model.contest.ContestDAO;
 import model.electionClerk.ElectionClerk;
 import model.electionClerk.ElectionClerkDAO;
 import model.incidence.Incidence;
@@ -7,10 +11,17 @@ import model.incidence.IncidenceDAO;
 import model.incidence.IncidenceType;
 import model.person.Person;
 import model.person.PersonDAO;
+import model.vote.Vote;
+import model.vote.VoteDAO;
 import view.MainWindow;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class Controller {
-    private ElectionClerk electionClerk;
+    private final ElectionClerk electionClerk;
     private Person currentPerson;
     private final MainWindow window;
     public Controller() {
@@ -21,6 +32,8 @@ public class Controller {
 
     public void login(String username, String password) {
         int id = ElectionClerkDAO.validate(username, password);
+        this.electionClerk.setId(id);
+        LocalTime now = LocalTime.now();
         if (id == 0) {
             Incidence incidence = new Incidence();
             incidence.setType(IncidenceType.FAILED_LOGIN);
@@ -28,7 +41,13 @@ public class Controller {
             IncidenceDAO.save(incidence);
             return;
         }
-        electionClerk.setId(id);
+        if ( now.isBefore(LocalTime.of(18, 0)) || now.isAfter(LocalTime.of(8, 0))) {
+            Incidence incidence = new Incidence();
+            incidence.setType(IncidenceType.LATE_OPENING);
+            incidence.setDescription("id: " + this.electionClerk.getId());
+            IncidenceDAO.save(incidence);
+        }
+        ElectionClerkDAO.openTable(this.electionClerk.getId());
         window.go("main");
     }
 
@@ -40,7 +59,7 @@ public class Controller {
         return PersonDAO.getPerson(document);
     }
 
-    public void vote(Person person) {
+    public void confirm(Person person) {
         this.setCurrentPerson(person);
         window.go("voting");
     }
@@ -51,5 +70,44 @@ public class Controller {
 
     public void setCurrentPerson(Person currentPerson) {
         this.currentPerson = currentPerson;
+    }
+
+    public ArrayList<Contest> getContests() {
+        ArrayList<Contest> contests = ContestDAO.getContest();
+        for (Candidate candidate : CandidateDAO.getCandidates()) {
+            for (Contest contest : contests) {
+                if (candidate.getContest().equals(contest.getName())) {
+                    contest.addCandidate(candidate);
+                }
+            }
+        }
+        return contests;
+    }
+
+    public void vote(int contestId) {
+        Vote vote = new Vote();
+        vote.setContestId(contestId);
+        vote.setPersonId(this.currentPerson.getId());
+        if (!VoteDAO.vote(vote)) {
+            Incidence incidence = new Incidence();
+            incidence.setType(IncidenceType.FAILED_VOTE);
+            incidence.setDescription("documento: " + this.currentPerson.getDocument());
+            IncidenceDAO.save(incidence);
+        }
+        this.currentPerson = null;
+        this.window.go("main");
+    }
+
+    public void closeTable() {
+        LocalTime now = LocalTime.now();
+        if ( now.isAfter(LocalTime.of(18, 0)) || now.isBefore(LocalTime.of(8, 0))) {
+            Incidence incidence = new Incidence();
+            incidence.setType(IncidenceType.LATE_CLOSING);
+            incidence.setDescription("id: " + this.electionClerk.getId());
+            IncidenceDAO.save(incidence);
+        } else {
+            ElectionClerkDAO.closeTable(this.electionClerk.getId());
+        }
+        window.dispose();
     }
 }

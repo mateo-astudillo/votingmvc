@@ -4,6 +4,8 @@ import controller.Controller;
 import model.person.Person;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ValidateGUI {
     private JPanel validateGUIPanel;
@@ -43,7 +45,11 @@ public class ValidateGUI {
 
         confirmButton.addActionListener(actionEvent -> {
             this.clearFields();
-            controller.vote(this.person);
+            controller.confirm(this.person);
+        });
+
+        cancelButton.addActionListener(actionEvent -> {
+            controller.closeTable();
         });
     }
 

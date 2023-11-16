@@ -8,8 +8,7 @@ import java.sql.SQLException;
 
 public class IncidenceDAO {
     public static void save(Incidence incidence) {
-        DBConnection dbConnection = new DBConnection();
-        Connection connection = dbConnection.getConnection();
+        Connection connection = DBConnection.getConnection();
         try {
             CallableStatement callableStatement =  connection.prepareCall("CALL saveIncidence(?, ?, ?);");
             callableStatement.setString("type", String.valueOf(incidence.getType()));

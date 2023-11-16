@@ -16,8 +16,31 @@ public class ElectionClerkDAO {
             callableStatement.setString("password", password);
             callableStatement.execute();
             int id = callableStatement.getInt("id");
-            callableStatement.close();
             return id;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void closeTable(int id) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            CallableStatement callableStatement = connection.prepareCall("CALL saveClosingTime(?);");
+            callableStatement.setInt("id", id);
+            callableStatement.execute();
+            callableStatement.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void openTable(int id) {
+        Connection connection = DBConnection.getConnection();
+        try {
+            CallableStatement callableStatement = connection.prepareCall("CALL saveOpeningTime(?);");
+            callableStatement.setInt("id", id);
+            callableStatement.execute();
+            callableStatement.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
