@@ -10,18 +10,22 @@ import java.awt.*;
 public class VotingGUI extends JPanel {
     private final Controller controller;
     private final ButtonGroup contestGroup;
-    private final Button vote;
 
     public VotingGUI(Controller controller) {
         this.controller = controller;
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         contestGroup = new ButtonGroup();
-        vote = new Button("Votar");
+        Button vote = new Button("Votar");
         add(new JLabel("Candidatos"));
         addContests();
         add(vote);
 
         vote.addActionListener(e -> {
-            int listNumber = Integer.parseInt(contestGroup.getSelection().getActionCommand());
+            String actionCommand = contestGroup.getSelection().getActionCommand();
+            if (actionCommand.isEmpty()) {
+                return;
+            }
+            int listNumber = Integer.parseInt(actionCommand);
             controller.vote(listNumber);
         });
     }

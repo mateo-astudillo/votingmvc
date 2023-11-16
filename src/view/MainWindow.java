@@ -31,4 +31,15 @@ public class MainWindow extends JFrame {
     public void go(String page) {
         cardLayout.show(panel, page);
     }
+
+    public void dialog(String message) {
+        JDialog dialog = new JDialog(this, "", true);
+        dialog.setMinimumSize(new Dimension(300, 100));
+        JLabel messageLabel = new JLabel(message);
+        messageLabel.setFont(new Font("ARIAL", Font.PLAIN, 20));
+        messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dialog.add(messageLabel);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
 }

@@ -17,8 +17,6 @@ import view.MainWindow;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class Controller {
     private final ElectionClerk electionClerk;
@@ -44,8 +42,15 @@ public class Controller {
         if ( now.isBefore(LocalTime.of(18, 0)) || now.isAfter(LocalTime.of(8, 0))) {
             Incidence incidence = new Incidence();
             incidence.setType(IncidenceType.LATE_OPENING);
-            incidence.setDescription("id: " + this.electionClerk.getId());
+            incidence.setDescription("presidente de mesa: " + this.electionClerk.getId());
             IncidenceDAO.save(incidence);
+        }
+        if ( now.isBefore(LocalTime.of(7, 50)) || now.isAfter(LocalTime.of(18, 0))) {
+            Incidence incidence = new Incidence();
+            incidence.setType(IncidenceType.TRY_OPEN_AFTER);
+            incidence.setDescription("presidente de mesa: " + this.electionClerk.getId());
+            IncidenceDAO.save(incidence);
+            // return;
         }
         ElectionClerkDAO.openTable(this.electionClerk.getId());
         window.go("main");
@@ -60,12 +65,12 @@ public class Controller {
     }
 
     public void confirm(Person person) {
+        if (PersonDAO.alreadyVoted(person.getDocument())) {
+            window.dialog("Ya votó");
+            return;
+        }
         this.setCurrentPerson(person);
         window.go("voting");
-    }
-
-    public Person getCurrentPerson() {
-        return currentPerson;
     }
 
     public void setCurrentPerson(Person currentPerson) {
@@ -94,6 +99,7 @@ public class Controller {
             incidence.setDescription("documento: " + this.currentPerson.getDocument());
             IncidenceDAO.save(incidence);
         }
+        window.dialog("Voto emitido correctamente");
         this.currentPerson = null;
         this.window.go("main");
     }
@@ -103,11 +109,24 @@ public class Controller {
         if ( now.isAfter(LocalTime.of(18, 0)) || now.isBefore(LocalTime.of(8, 0))) {
             Incidence incidence = new Incidence();
             incidence.setType(IncidenceType.LATE_CLOSING);
-            incidence.setDescription("id: " + this.electionClerk.getId());
+            incidence.setDescription("presidente de mesa: " + this.electionClerk.getId());
             IncidenceDAO.save(incidence);
-        } else {
-            ElectionClerkDAO.closeTable(this.electionClerk.getId());
         }
+        if (now.isBefore(LocalTime.of(18, 0)) && now.isAfter(LocalTime.of(8, 0))) {
+            Incidence incidence = new Incidence();
+            incidence.setType(IncidenceType.TRY_CLOSING_BEFORE);
+            incidence.setDescription("presidente de mesa: " + this.electionClerk.getId());
+            IncidenceDAO.save(incidence);
+            return;
+        }
+        ElectionClerkDAO.closeTable(this.electionClerk.getId());
         window.dispose();
+    }
+
+    public void cancelPerson(Person person) {
+        Incidence incidence = new Incidence();
+        incidence.setType(IncidenceType.CANCEL_PERSON);
+        incidence.setDescription("documento: " + person.getFirstName());
+        IncidenceDAO.save(incidence);
     }
 }

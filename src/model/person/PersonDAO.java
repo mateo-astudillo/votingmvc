@@ -5,6 +5,21 @@ import model.DBConnection.DBConnection;
 import java.sql.*;
 
 public class PersonDAO {
+    public static boolean alreadyVoted(int document) {
+        Connection connection = DBConnection.getConnection();
+        String query = "SELECT vote FROM `Person` WHERE `Person`.`document` = ?;";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, document);
+            preparedStatement.execute();
+            ResultSet resultSet = preparedStatement.getResultSet();
+            resultSet.next();
+            return resultSet.getInt(1) == 1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
     public static boolean isValid(int document) {
         Connection connection = DBConnection.getConnection();
         String query = "SELECT COUNT(*) FROM `Person` WHERE `Person`.`document` = ?;";
